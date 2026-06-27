@@ -102,6 +102,10 @@ export default async function(eleventyConfig) {
 		return (new Date()).toISOString();
 	});
 
+	eleventyConfig.setServerOptions({
+		host: "0.0.0.0",
+	});
+
 	// Features to make your build faster (when you need them)
 
 	// If your passthrough copy gets heavy and cumbersome, add this line
