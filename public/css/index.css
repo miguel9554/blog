@@ -157,6 +157,11 @@ code {
 	word-break: break-all;
 }
 
+img {
+	max-width: 100%;
+	height: auto;
+}
+
 /* Header */
 header {
 	display: flex;
