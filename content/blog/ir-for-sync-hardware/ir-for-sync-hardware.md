@@ -1,7 +1,6 @@
 ---js
 const title = "An IR for Synchronous Hardware";
 const date = "2026-06-27";
-const draft = true;
 ---
 
 # Motivation for a IR
