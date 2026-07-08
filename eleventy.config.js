@@ -21,7 +21,8 @@ export default async function(eleventyConfig) {
 		.addPassthroughCopy({
 			"./public/": "/"
 		})
-		.addPassthroughCopy("./content/feed/pretty-atom-feed.xsl");
+		.addPassthroughCopy("./content/feed/pretty-atom-feed.xsl")
+		.addPassthroughCopy("./content/**/*.svg");
 
 	// Run Eleventy when these files change:
 	// https://www.11ty.dev/docs/watch-serve/#add-your-own-watch-targets
@@ -71,6 +72,18 @@ export default async function(eleventyConfig) {
 			}
 		}
 	});
+
+	// Skip eleventy-img processing for SVGs — they don't need rasterization and
+	// image-size can't always parse them (e.g. when DOCTYPE pushes <svg> past 1 kB).
+	eleventyConfig.htmlTransformer.addPosthtmlPlugin("html", (_context) => (tree) => {
+		tree.match({ tag: "img" }, (node) => {
+			if (node.attrs?.src?.toLowerCase().endsWith(".svg")) {
+				node.attrs["eleventy:ignore"] = "";
+			}
+			return node;
+		});
+		return tree;
+	}, { priority: 0 });
 
 	// Image optimization: https://www.11ty.dev/docs/plugins/image/#eleventy-transform
 	eleventyConfig.addPlugin(eleventyImageTransformPlugin, {

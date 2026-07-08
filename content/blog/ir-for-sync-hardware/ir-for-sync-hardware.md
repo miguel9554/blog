@@ -126,9 +126,29 @@ Having RTL compiled into a semantic IR, means that _only_ RTL designs which
 represent synchronous hardware are valid to be simulated and carry over the
 whole digital design flow. 
 
-![Synchrnous digital hardware](./ddf.drawio.png)
+![Synchrnous digital hardware](./ddf.svg)
 
-gdsds
+With a proper semantic IR, many tasks are pushed to the left of the flow, with
+the RTL development. Unintended latches, unsynthesizable logic, combo loops, all
+become blockers for IR compilation, thus blocking the _whole_ flow. They are no
+longer something to be catch with thousands of lines of linter code, or only
+after the initial synthesis is done.
+
+Another important point is the _decoupling_ of the RTL and TB development, and
+thus, languages. We could have an RTL design in VHDL, compile it into the IR and
+then simulate this from a SystemVerilog TB.
+
+Another gain is the lowering of HLS-like analysis and optimizations to the RTL
+level. Given an RTL description compiled to the IR, we already know all the
+flops and arithmetic operators we have. Analysis of time sharing or
+parallelization architectures become possible given the knowledge of these
+operators. With the current flow, for an RTL level analysis this information can
+only be obtained after synthesis, which exposes these numbers but after boolean
+and timing optimization, which brings noise to a purely architectural analysis.
+
+And a major win of such a workflow in the age of AI and LLMs producing thousand
+of lines of code per day, is the guarantee that any compiling (into the IR) RTL
+code is already synthesizable able and valid for synchronous hardware.
 
 # Summary
 
