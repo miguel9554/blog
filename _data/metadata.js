@@ -4,6 +4,6 @@ export default {
 	language: "en",
 	description: "Notes on hardware design and tooling.",
 	author: {
-		name: "Miguel"
+		name: "Miguel Perez Andrade"
 	}
 }
