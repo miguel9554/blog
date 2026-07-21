@@ -4,14 +4,14 @@ const date = "2026-07-14";
 ---
 
 I started working on RTL design for ASIC after some years doing web development.
-Coming from an ecosystem that is so mature and always evolving in terms of
-languages, methodologies and frameworks, it was shocking in many aspects to
-migrate into a field that many times feels stuck in the 1980s.
+Coming from an ecosystem that's mature and constantly evolving in languages,
+methodologies and frameworks, moving into a field that mostly still feels stuck
+in the 1980s really threw me off.
 
 As opinionated as I am, I spent many of my working hours complaining about
 Verilog semantics, UVM, tool failures and backwards workflows (anyone
 unfortunate enough to have worked with me can confirm this). For many years
-these were just complains, but with the beginning of 2026 and my discovery of
+these were just complaints, but with the beginning of 2026 and my discovery of
 Agentic coding, I decided to give a try to an idea I had in mind for a long
 time: a verilog-like HDL, without all the pain of the original language, with
 similar syntax but with extended capabilities.
@@ -31,17 +31,17 @@ currently has a pretty much complete SystemVerilog compiler.
 
 One of the things that always feels odd about writing SystemVerilog/VHDL, is how
 often the word "infer" is said. You don't declare a flop: you write procedural
-code that is then _infered_ to be a flop. To me this always was so absurd! To
-describe a simple couter we do the following:
+code that is then _inferred_ to be a flop. To me this always was so absurd! To
+describe a simple counter we do the following:
 
-```systemverilog
+```verilog
 logic [8-1:0] counter;
 always @(posedge clk) counter <= counter+1;
 ```
 
 Instead of something much more obvious like
 
-```systemverilog
+```verilog
 flop [8-1:0] counter;
 
 assign counter.clk = clk;
@@ -77,10 +77,10 @@ constantly reminding the NBA vs Blocking assign, etc.
 # Making the easy difficult (and the difficult impossible)
 
 With industry standard HDLs like SystemVerilog, things that _should_ be easy
-like defining a register's clock and reset, the domain of a signal or reset
-value of a register, is actually not possible to do _directly_ in
-SystemVerilog/HDL, meaning this are not direct properties we set with the
-language. Instead, this fundamental properties are _inferred_ from the
+like defining a register's clock and reset, the clock domain of a signal or the
+reset value of a register, are actually not possible to do _directly_ in the
+language, meaning these are not direct properties we set with the language
+constructs. Instead, these fundamental properties are _inferred_ from the
 procedural programming constructs we use, making what should be the first-class
 citizens of the language some inferred properties behind an unnecessary
 indirection layer.
@@ -94,23 +94,24 @@ LRM but impossible due to tooling status):
 
 * Parametrizable functions
 * Parametrizable datatypes
-* Polymoprhic/multiple dispatch functions
+* Polymorphism/multiple dispatch
 * Iterating over interfaces/structs (reflection in general)
 * Parametrizing with file contents (e.g. regmap module parametrizable by
   systemRDL file)
 
-Instead of languages focusing on these useful code reuse concepts while making
-the basic definitios easy to do, we have languages which are very limitied in
-their features, and provide the most contrived ways to define the most basic
-elements.
+Instead of HDLs focusing on these useful code reuse concepts while making the
+basic definitions easy to do, we have languages which are very limited in their
+features, and provide the most contrived ways to define the most basic elements.
 
-This manifests in development of large SoCs/ASIC requiring as much RTL code as
-tooling for code generators. The poor capabilities of the language prohibit
-from having useful abstractions allowing code reuse beyond simple width
-parametrization or conditional module instantiation.
+This shows up concretely in how large designs actually get built. On ASIC, teams
+end up writing as much tooling and code-generation infrastructure as RTL itself,
+just to get the reuse the language won't give them directly. On FPGA, the same
+gap gets filled by vendor GUIs and IP wizards, which solve the problem by hiding
+the language entirely instead of fixing it.
 
-Defining an IR which contains _just_ the bare minimal elements required to
-define _any_ synthesizable RTL block, make a good split of responsibilities
+An IR sitting underneath the HDL is what actually breaks this tradeoff. Instead
+of a single language having to be both minimal enough to guarantee
+synthesizability and expressive enough for real reuse, you can split the job:
 
 * The IR and it's compiler takes care of guaranteeing that the description is
   valid synthesizable RTL code
@@ -120,11 +121,11 @@ define _any_ synthesizable RTL block, make a good split of responsibilities
 
 # Mealy is all you need
 
-Synthesizable RTL actually _is_ extremly simple. Any RTL block, be it a simple
+Synthesizable RTL actually _is_ extremely simple. Any RTL block, be it a simple
 counter or the top level of a SoC with RISCV cores and custom hardware
 accelerators, can be modeled by the following extremely simple system
 
-![Synchronous digital hardware](./moore.png)
+![Mealy Machine](./mealy.png)
 
 Just two components:
 
@@ -141,8 +142,7 @@ two elements we need to define
 
 If this sounds suspiciously simple, that's because it's not a new idea: this is
 just a Mealy machine, formalized decades ago in automata theory. Turns out
-reinventing the wheel is a lot less embarrassing when the wheel was already this
-good.
+reinventing the wheel is sometimes a good idea when the wheel was actually good.
 
 # A minimal IR for Synthesizable RTL
 
@@ -159,112 +159,99 @@ working with registers and the transfer functions connecting them. The details
 of the logic implemented by these transfer functions are not relevant. All of
 these concepts belong to the upper _functional_ layer.
 
-To make a comparison, I find a IR for synthesizable RTL having a primitive for a
-FIFO being equivalent to a IR for programming languages having a primitive for
+To make a comparison, I find an IR for synthesizable RTL having a primitive for a
+FIFO being equivalent to an IR for programming languages having a primitive for
 writing contents to a file. The IR should focus on the basic primitives that
 allow _any_ program (circuit) to be generated: a particular program like a file
 writer (FIFO) should be made up of these fundamental primitives, not be one of
 them.
 
 I find the approach of keeping the IR minimal and as "dumb" as possible, and
-delegating the encapsulation/share of these concepts in a fantasy HDL that can
-handle these level of abstraction. The definition of latency, read/write
-operations and size should be able to be encoded in the HDL language, it should
-not be handled by the IR!
+delegating the encapsulation/sharing of these concepts in a capable HDL that can
+handle these level of abstraction. The definition of the read/write operations,
+their latency and size should be able to be encoded in a generic way in the HDL
+itself, _not_ in an IR layer.
 
 # Introducing Mate IR 🧉
 
-With the idea of seeing how far I could take this concept, I sat down and wrote
-(or actually prompted Claude to write) a compiler for this conceptual IR.
+With the idea of seeing how far I could take this, I sat down and wrote (or,
+more honestly, prompted Claude to write) a compiler for it.
 
-The IR shape I was targeting is the Mealy Machine described before: a set of
-registers, and the combinational logic connecting them and the input and output
-ports. So defining this elements was sufficient to define the module.
+The IR itself is exactly the Mealy machine from before: registers, and a
+combinational network connecting them to the module's inputs and outputs.
+Getting a real compiler to target that shape meant working through a few
+decisions the "just two elements" pitch conveniently skips over.
 
-We merge the inputs and outputs with the declared internal values of the modules
-into a group called _nodes_: these are all the observable _combinational_ points
-of the module. They carry a datatype and their clock and
-reset domains. They also carry a _role_ indicating if they are input, output or
-internal. Internal are only for observability purposes, while inputs and outputs
-are the point of contact of the module with the outside world.
+The combinational network ended up being a single, global graph instead of one
+per module. This wasn't a decision make upfront but rather a fix to a problem
+encountered along the way. The initial approach was to lower each HDL module
+independently into registers-plus-DAG, wire the modules together, and you ended
+up getting what looks exactly like a combinational loop at every module
+boundary.  Merging everything into one graph across the whole design is what
+makes that go away.
 
-For the registers, only D flops are supported at the moment: they have a data
-type, same as the nodes, and a clock port, an optional async reset port plus
-synchronous input and output data ports.
+That graph is also strictly word-level, built from a deliberately small set of
+operators: arithmetic (SUB, ADD, MUL), muxing and slicing, and bitwise ops
+(AND, OR, XOR). Every one of them has an obvious bit-level lowering, nothing
+"clever" is representable at this level. Keeping the operator set this small
+keeps the DFG easy to analyze and has an obvious lowering path for synthesis.
 
-Regarding the datatypes of both the registers and the combinational nodes, there
-is support for "complex" datatypes like vectors, structs and enums. 
+Parametrization was one of the SystemVerilog features that was much more work
+than it had any right to be. Parameters are resolved entirely at compile time,
+so nothing survives into the IR except baked-in constants, but computing them
+correctly meant writing something close to a small expression evaluator inside
+the compiler. "Just substitute the values in" turned out to be doing a lot of
+hiding.
 
-The hardest part to implement was the combinational network. I went through many
-options and the one that made most sense was a DFG of _word_ level operators.
-Initially I had a DFG that supported struct or array operands, but in the end
-they were not adding anything of value and were hard to maintain. I ended up
-opting for _only_ word operands and operators.
+Making clock domains global instead of local labels also took way more work than
+expected, but it payed off immediately: once every register's clock is resolved
+to a small set of unique global clocks, the crossing points, the registers where
+one clock domain hands off to another, just fall out of compilation.  No
+separate CDC tool was needed for this, it was a fact obtained early in the
+compilation process.
 
-The IR nodes _do_ allow for "complex" datatypes like struct or enum, but these
-are binded to DFG nodes outside the DFG itself, keeping the DFG word-level.
+Of course we can't move forward with whatever crossings we find. In this initial
+compiler version, you have to provide a file "waiving" each crossing as
+intentional, at the same level of hierarchy as the design itself, or compilation
+simply doesn't proceed. It's a blunt mechanism for now, just a declared list of
+valid crossings, but it's already enough to move CDC from something you check
+for after the fact to something you have to state up front. The natural next
+step is a static tool that actually reasons about the IR and validates whether a
+given crossing is safe, instead of just trusting the waiver. But even without
+that yet, the shift in when you're forced to think about timing intent, at the
+start of writing the RTL instead of somewhere in signoff, is the part I care
+about most.
 
-Being the DFG word-level, a pretty small family of operators was sufficient for
-completeness: arithmetic (SUB, ADD, MUL), muxing and slicing, and
-bitwise ops (AND, OR, XOR). Restricting it to operators with obvious bit-level
-lowering keeps the DFG compact and easy to analyze, while making the eventual
-translation to bit-level synthesis straightforward.
-
-Another interesting aspect of the DFG is that it is _global_. The HDL provides a
-module hierarchy, and the obvious lowering of each HDL module into a Mealy
-Machine with registers + combo network, results in combinational loops on every
-module interconnection! To prevent these loops we need to look into the internal
-structure of each combinational network. Making the DFG global, that is, merging
-all the module DFGs into one not only solves this problem, but allows to
-identify better partitions later.
-
-## Clock domains
-
-Since this is a timing-first IR, every combinational signal has attached a clock
-domain, indicating to which domain it belongs to. There is an Async domain for
-signal with no _known_ clock domain and Static for signals which are static in
-time.
-
-The interesting thing about the clock domains is that they are global. There is
-a step in the compilation process in which the clocks of all flops are traversed
-through the hierarchy to reach to the unique set of global clocks. This means,
-in the compiled result, for a flop deep in the design hierarchy, it's clock
-domain is not just "this local signal which happens to be a clock" but "this
-global clock source". This enables basic CDC checks in the compilation process
-itself, and enable complex static validations on the IR itself.
+After compiling smaller designs and a handful of small cores off GitHub, the
+real milestone was getting [Ibex Core](https://github.com/lowRISC/ibex) to
+compile. It's a real RISC-V core that leans hard on packages, typedefs, and
+parametrization. Getting it compiled into Mate IR showed that a Mealy machine
+was truly all we need!
 
 ## Current status
 
-With this approach I managed to obtain a compiler from a pretty complete set of
-SystemVerilog features: unpacked arrays, enums, structs, interfaces,
-parametrization, functions. 
+The SystemVerilog compiler handles a pretty complete slice of the language at
+this point: unpacked arrays, enums, structs, interfaces, parametrization,
+functions.
 
-Alongside the compiler into the IR I developed a simulation backend that
-consumed a resolved IR. The first simulator was pretty basic: read files for all
-inputs, drive them, and generate a VCD with
-[cpp-vcd-tracer](https://github.com/nakane1chome/cpp-vcd-tracer). This first
-basic simulator allowed to compare our simulated IR output against Verilator,
-giving a pass criteria for development.
-
-The next iteration of the simulator was a static codegened C++ library that
-provided an interface to simulate the RTL. This interface _intentionally_ has no
-management of time, just provides methods to advance clock/resets, and provide
-update for synchronous signals on the clock edges.
-
-The current simulation strategy is to codegen a SystemVerilog module with the
-same interface as the top RTL module, and inside it call this C++ library via
-DPI calls. This way the Mate IR compiled model can be called from any
-SystemVerilog Testbench!
-
-The major milestone of the project up until now was compiling [Ibex
-Core](https://github.com/lowRISC/ibex) which is a RISCV core using many
-"advanced" SystemVerilog features, like packages, all types of typedefs and
-parametrizations. It was a pretty good stress test on the compiler!
+On the consumer side there are two things working today. A simulator, which
+codegens a C++ model from the resolved IR and wraps it in a small SystemVerilog
+shim called over DPI, so it can be dropped straight into any existing
+SystemVerilog testbench. And a static analysis tool that, for now, just reports
+the hierarchy of registers referencing each global clock. It's a basic shell
+more than a checker, but it's built directly on the clock resolution described
+above, so the real static checks, the ones that would replace the waiver file
+entirely, have a clean foundation to be added on top of.
 
 # Summary
 
-If you got down this far you probably found this interesting and want to know
-some more. You can check the IR and compiler in the repo, try to run it for some
-design and report some issue or propose an enhancements. In the future I'll try
-to make some more posts with more details about the IR design and the
-implementation of its components.
+What started some months ago as seeing how far I could take an idea with a
+coding agent on my command, ended up being a pretty complete IR for
+synthesizable RTL. It is far from being complete or actually useful but it's a
+nice simplification over several facts that are currently over complicated.
+
+If any of this is useful or interesting to you, the repo is at
+[github.com/miguel9554/mateIR](https://github.com/miguel9554/mateIR). Try to run
+it on some design you have, report any errors, tell me why do you think this is
+bad (or good!). I'll be writing more about the internals of the IR and the most
+complicated parts to get right.
