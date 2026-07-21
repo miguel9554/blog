@@ -33,7 +33,7 @@ There are two main reasons this is beneficial to the EDA ecosystem:
 The rest of this post covers the MxN problem in more detail, then digs into
 what a semantic IR for synchronous hardware actually looks like.
 
-## The MxN problem
+# The MxN problem
 
 A growing number of HDLs now coexist in the open-source ecosystem:
 
@@ -99,7 +99,7 @@ code generation backend instead of each language reinventing it.
 In the case of _synchronous hardware_, there is a second benefit to having an
 IR, that is to have a _semantic_ IR.
 
-## A semantic IR for Synthesizable RTL
+# A semantic IR for Synthesizable RTL
 
 The main industry languages (VHDL and SystemVerilog) carry over an original sin:
 they were not thought of and designed as synchronous hardware design languages,
@@ -135,7 +135,7 @@ mean something specific: the IR's syntax directly _is_ its meaning. A register
 in the IR is a register, not a pattern a compiler has to infer from an `always`
 block. There's no gap between what's written and what it does.
 
-### How does a Semantic IR for RTL look like?
+## How does a Semantic IR for RTL look like?
 
 Synthesizable RTL has a great advantage, and it's that, taken to its
 fundamental representation, it is extremely simple. Any Synthesizable RTL
@@ -195,7 +195,7 @@ is harder, since registers must be inferred from procedural code rather than
 read off directly. But the target shape the compiler is building towards never
 changes, whether the source is a 4-bit counter or a RISC-V core.
 
-## Implications for Digital Design Flow
+# Implications for Digital Design Flow
 
 Having RTL compiled into this semantic IR, means that _only_ Synthesizable RTL
 designs are valid to be simulated and carried over the whole digital design
@@ -203,7 +203,7 @@ flow.
 
 ![Synchronous digital hardware](./ddf.svg)
 
-### Early generic synthesis
+## Early generic synthesis
 
 With a proper semantic IR, meaning, compiling IR into a timing-aware word-level
 netlist, many tasks are pushed to the left of the flow, with the RTL
@@ -212,7 +212,7 @@ blockers for IR compilation, thus blocking the _whole_ flow. They are no longer
 something to be found buried among thousands of lines of linter output, or only
 after the initial synthesis is done.
 
-### Decoupling of RTL and TB
+## Decoupling of RTL and TB
 
 Another important point is the _decoupling_ of the RTL and TB development, and
 thus, languages. We could have an RTL design in VHDL, compile it into the IR and
@@ -227,7 +227,7 @@ between HDL and TB language. Defining a clear hardware IR with a clear timing
 access model, reduces this complexity to understanding this interface:
 everything communicating with it is pure software.
 
-### Clear interface for simulation software
+## Clear interface for simulation software
 
 Alongside the decoupling of TB and RTL, the interface for simulation software
 becomes much clearer. We have an IR block with its inputs, outputs and internal
@@ -241,7 +241,7 @@ the RTL block itself no longer needs to be interpreted through a general
 discrete-event scheduler: it is evaluated as an explicit synchronous state
 transition system.
 
-### HLS-like analysis
+## HLS-like analysis
 
 Another gain is the lowering of HLS-like analysis and optimizations to the RTL
 level. Given an RTL description compiled to the IR, we already know all the
@@ -251,7 +251,7 @@ operators. With the current flow, for an RTL level analysis this information can
 only be obtained after synthesis, which exposes these numbers but after boolean
 and timing optimization, which brings noise to a purely architectural analysis.
 
-### LLM assisted development
+## LLM assisted development
 
 A major win of such a workflow in the age of AI, with LLMs producing thousands
 of lines of code per day, is the guarantee that any RTL code compiling into the
@@ -268,7 +268,7 @@ methodology. We get the classical and massive advantage of converting run time
 errors (most of the times not even reported) into compile errors (clearly
 reported).
 
-## Summary
+# Summary
 
 We'll have later posts explaining the IR implementation in detail. The important
 point to note here, is that the IR _must_ already incorporate the concepts of
