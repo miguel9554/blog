@@ -7,6 +7,19 @@ import pluginFilters from "./_config/filters.js";
 
 /** @param {import("@11ty/eleventy").UserConfig} eleventyConfig */
 export default async function(eleventyConfig) {
+	// Shift headings authored in Markdown down one level so they do not
+	// compete with a page's top-level title.
+	eleventyConfig.amendLibrary("md", (markdownLibrary) => {
+		markdownLibrary.core.ruler.after("block", "shift_heading_levels", (state) => {
+			for(const token of state.tokens) {
+				if(token.type === "heading_open" || token.type === "heading_close") {
+					const level = Number(token.tag.slice(1));
+					token.tag = `h${Math.min(level + 1, 6)}`;
+				}
+			}
+		});
+	});
+
 	// Drafts, see also _data/eleventyDataSchema.js
 	eleventyConfig.addPreprocessor("drafts", "*", (data, content) => {
 		if(data.draft && process.env.ELEVENTY_RUN_MODE === "build") {
