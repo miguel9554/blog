@@ -41,7 +41,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build site
-        run: pnpm build -- --pathprefix="/${GITHUB_REPOSITORY#*/}/"
+        run: pnpm exec eleventy --pathprefix="/${GITHUB_REPOSITORY#*/}/"
         env:
           URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/
 

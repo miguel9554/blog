@@ -30,6 +30,9 @@ importers:
       luxon:
         specifier: ^3.5.0
         version: 3.7.2
+      prismjs:
+        specifier: ^1.30.0
+        version: 1.30.0
       zod:
         specifier: ^3.23.8
         version: 3.25.76
