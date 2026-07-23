@@ -22,9 +22,10 @@ developing a “Verilog compiler,” which could then be “easily extended” i
 new language.
 
 Little did I know that this side project would grow into a much larger
-undertaking than I had expected. The result is Mate IR 🧉, an intermediate
-representation for synthesizable RTL that now includes a nearly complete
-SystemVerilog compiler and simulator.
+undertaking than I had expected. The result is [Mate IR
+🧉](https://github.com/miguel9554/mateIR), an intermediate representation for
+synthesizable RTL that now includes a nearly complete SystemVerilog compiler and
+simulator.
 
 # "Compiling" Verilog
 
