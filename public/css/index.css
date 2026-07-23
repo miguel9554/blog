@@ -314,3 +314,18 @@ header {
 .post-metadata time {
 	margin-right: 1em;
 }
+
+/* Social links */
+.social-links {
+	display: flex;
+	gap: 1rem;
+	margin-top: 1.5rem;
+}
+.social-links a {
+	display: inline-flex;
+}
+.social-links svg {
+	width: 1.5rem;
+	height: 1.5rem;
+	fill: currentColor;
+}

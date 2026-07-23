@@ -2,11 +2,27 @@ import { IdAttributePlugin, InputPathToUrlTransformPlugin, HtmlBasePlugin } from
 import pluginSyntaxHighlight from "@11ty/eleventy-plugin-syntaxhighlight";
 import pluginNavigation from "@11ty/eleventy-navigation";
 import { eleventyImageTransformPlugin } from "@11ty/eleventy-img";
+import { faGithub, faLinkedin } from "@fortawesome/free-brands-svg-icons";
 
 import pluginFilters from "./_config/filters.js";
 
+const socialIcons = {
+	github: faGithub,
+	linkedin: faLinkedin,
+};
+
 /** @param {import("@11ty/eleventy").UserConfig} eleventyConfig */
 export default async function(eleventyConfig) {
+	eleventyConfig.addShortcode("icon", (name) => {
+		const icon = socialIcons[name];
+		if (!icon) {
+			throw new Error(`Unknown icon: ${name}`);
+		}
+
+		const [width, height, , , path] = icon.icon;
+		return `<svg viewBox="0 0 ${width} ${height}" aria-hidden="true" focusable="false"><path d="${path}"/></svg>`;
+	});
+
 	// Shift headings authored in Markdown down one level so they do not
 	// compete with a page's top-level title.
 	eleventyConfig.amendLibrary("md", (markdownLibrary) => {
