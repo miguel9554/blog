@@ -1,6 +1,6 @@
 ---js
 const title = "A minimal IR for RTL";
-const date = "2026-07-14";
+const date = "2026-07-23";
 ---
 
 I started working on RTL design for ASIC after some years doing web development.
@@ -10,29 +10,30 @@ in the 1980s really threw me off.
 
 As opinionated as I am, I spent many of my working hours complaining about
 Verilog semantics, UVM, tool failures and backwards workflows (anyone
-unfortunate enough to have worked with me can confirm this). For many years
-these were just complaints, but with the beginning of 2026 and my discovery of
-Agentic coding, I decided to give a try to an idea I had in mind for a long
-time: a verilog-like HDL, without all the pain of the original language, with
-similar syntax but with extended capabilities.
+unfortunate enough to have worked with me can confirm this). After many years
+complaining, at the beginning of 2026 and I discovered the virtues of agentic
+coding and decided to give a try to an idea I had in mind for a long time: a
+verilog-like HDL, without all the pain of the original language, with similar
+syntax but with extended capabilities.
 
-Being totally ignorant on the topic of Programming Language Design (specially
-due to being an Electronics Engineer by training, not a computer scientist) I
-decided to start by developing a "Verilog compiler", which would then could get
-"easily extended" to a new language.
+Being totally ignorant on the topic of programming language/compiler development
+(specially due to being an Electronics Engineer by training) I decided to start
+by developing a "Verilog compiler", which would then could get "easily extended"
+to a new language.
 
 Little did I know this side project would get me almost obsessed to the point of
-still being working on it 7 months later (AI psychosis is real!). What ended up
+still being working on it 7 months later (AI psychosis?). What ended up
 happening is the development of [Mate IR
 🧉](https://github.com/miguel9554/mateIR), an IR for synthesizable RTL which
-currently has a pretty much complete SystemVerilog compiler.
+currently has a pretty much complete SystemVerilog compiler and simulator.
 
 # "Compiling" Verilog
 
 One of the things that always feels odd about writing SystemVerilog/VHDL, is how
 often the word "infer" is said. You don't declare a flop: you write procedural
-code that is then _inferred_ to be a flop. To me this always was so absurd! To
-describe a simple counter we do the following:
+code that is then _inferred_ to be a flop. To me this always was so absurd!
+
+A simple 8-bit counter looks like this
 
 ```verilog
 logic [8-1:0] counter;
