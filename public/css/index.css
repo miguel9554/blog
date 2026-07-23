@@ -97,6 +97,13 @@ main,
 footer {
 	padding: 1rem;
 }
+.site-footer {
+	margin-top: 2rem;
+	padding-top: 2rem;
+	padding-bottom: 3rem;
+	border-top: 1px solid var(--color-gray-20);
+	font-size: .875rem;
+}
 main :first-child {
 	margin-top: 0;
 }
