@@ -1,6 +1,6 @@
 ---js
 const title = "A minimal IR for RTL";
-const date = "2026-07-14";
+const date = "2026-07-23";
 ---
 
 I started working on RTL design for ASIC after some years doing web development.
