@@ -17,12 +17,14 @@
 		"node": ">=18"
 	},
 	"devDependencies": {
+		"@fortawesome/free-brands-svg-icons": "^7.3.1",
 		"@11ty/eleventy": "^3.0.0",
 		"@11ty/eleventy-img": "^5.0.0",
 		"@11ty/eleventy-navigation": "^0.3.5",
 		"@11ty/eleventy-plugin-syntaxhighlight": "^5.0.0",
 		"cross-env": "^7.0.3",
 		"luxon": "^3.5.0",
+		"prismjs": "^1.30.0",
 		"zod": "^3.23.8",
 		"zod-validation-error": "^3.3.1"
 	},

@@ -6,8 +6,16 @@ const eleventyNavigation = {
 ---
 # About
 
-Academic formation as Electronic Engineer, with sufficient mixture of experience
-in Software Development and ASIC design, to be annoying and find the many
-pitfalls in current EDA ecosystem.
+Electronics Engineer with a mixture of experience on ASIC design and web
+development. Currently working on [Mate
+IR](https://github.com/miguel9554/mateIR), an open source IR for synthesizable
+RTL.
 
-Will be posting mainly about the development of [Mate IR](https://github.com/miguel9554/mateIR)
+<div class="social-links">
+	<a href="https://github.com/miguel9554" target="_blank" rel="noopener noreferrer" aria-label="GitHub profile">
+		{% icon "github" %}
+	</a>
+	<a href="https://www.linkedin.com/in/miguel-perez-andrade-aa1760133/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn profile">
+		{% icon "linkedin" %}
+	</a>
+</div>

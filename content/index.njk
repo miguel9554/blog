@@ -5,17 +5,20 @@ const eleventyNavigation = {
 };
 ---
 <section class="home-intro">
-	<h1>Engineered Thoughts</h1>
+	<h1>Posts</h1>
+	<p>Notes on hardware design and tooling.</p>
 </section>
 
 {% if collections.posts %}
 <section class="home-writing" aria-labelledby="writing-heading">
-	<h2 id="writing-heading">Writing</h2>
-	{% for post in collections.posts | reverse %}
-	<a class="home-post" href="{{ post.url }}">
-		<span class="home-post-title">{{ post.data.title }}</span>
-		<time class="home-post-date" datetime="{{ post.date | htmlDateString }}">{{ post.date | readableDate("LLLL yyyy") }}</time>
-	</a>
-	{% endfor %}
+	<h2 id="writing-heading">All posts</h2>
+	<ul class="home-posts">
+		{% for post in collections.posts | reverse %}
+		<li>
+			<a href="{{ post.url }}">{{ post.data.title }}</a>
+			<time datetime="{{ post.date | htmlDateString }}">{{ post.date | readableDate("LLLL yyyy") }}</time>
+		</li>
+		{% endfor %}
+	</ul>
 </section>
 {% endif %}

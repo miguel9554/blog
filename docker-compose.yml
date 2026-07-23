@@ -1,6 +1,7 @@
 services:
   blog:
     build: .
+    command: sh -c "CI=true pnpm install --frozen-lockfile && pnpm start"
     ports:
       - "8080:8080"
     volumes:
