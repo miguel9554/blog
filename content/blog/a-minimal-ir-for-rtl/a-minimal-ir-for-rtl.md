@@ -11,21 +11,20 @@ in the 1980s really threw me off.
 As opinionated as I am, I spent many of my working hours complaining about
 Verilog semantics, UVM, tool failures and backwards workflows (anyone
 unfortunate enough to have worked with me can confirm this). After many years
-complaining, at the beginning of 2026 and I discovered the virtues of agentic
+complaining, at the beginning of 2026 I discovered the virtues of agentic
 coding and decided to give a try to an idea I had in mind for a long time: a
 verilog-like HDL, without all the pain of the original language, with similar
 syntax but with extended capabilities.
 
-Being totally ignorant on the topic of programming language/compiler development
-(specially due to being an Electronics Engineer by training) I decided to start
-by developing a "Verilog compiler", which would then could get "easily extended"
-to a new language.
+Being completely unfamiliar with programming language and compiler development
+(especially as an electronics engineer by training) I decided to start by
+developing a “Verilog compiler,” which could then be “easily extended” into a
+new language.
 
-Little did I know this side project would get me almost obsessed to the point of
-still being working on it 7 months later (AI psychosis?). What ended up
-happening is the development of [Mate IR
-🧉](https://github.com/miguel9554/mateIR), an IR for synthesizable RTL which
-currently has a pretty much complete SystemVerilog compiler and simulator.
+Little did I know that this side project would grow into a much larger
+undertaking than I had expected. The result is Mate IR 🧉, an intermediate
+representation for synthesizable RTL that now includes a nearly complete
+SystemVerilog compiler and simulator.
 
 # "Compiling" Verilog
 
